@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Судоку - Мобильная игра</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 15px;
+            margin: 5px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 5px; /* Уменьшили отступ снизу */
+            padding-bottom: 0; /* Убрали отступ снизу */
+        }
+
+        .header h1 {
+            color: #764ba2;
+            font-size: 18px; /* Уменьшили размер шрифта */
+            margin-bottom: 0; /* Убрали отступ снизу */
+        }
+
+        /* Сетка судоку */
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            gap: 1px;
+            background: #333;
+            border: 2px solid #333;
+            border-radius: 4px;
+            margin: 0 auto 15px;
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 1/1;
+        }
+
+        .sudoku-cell {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            user-select: none;
+        }
+
+        .sudoku-cell:nth-child(3n) {
+            border-right: 2px solid #333;
+        }
+
+        .sudoku-cell:nth-child(9n) {
+            border-right: none;
+        }
+
+        .sudoku-cell:nth-child(n+19):nth-child(-n+27),
+        .sudoku-cell:nth-child(n+46):nth-child(-n+54) {
+            border-bottom: 2px solid #333;
+        }
+
+        .sudoku-cell.fixed {
+            color: #764ba2;
+            font-weight: 900;
+        }
+
+        .sudoku-cell.user-input {
+            color: #667eea;
+        }
+
+        .sudoku-cell.selected {
+            background: #e6e6ff;
+        }
+
+        .sudoku-cell.highlighted {
+            background: #f0f0ff;
+        }
+
+        .sudoku-cell.error {
+            background: #ffe6e6;
+            color: #ff3333;
+        }
+
+        .sudoku-cell.candidate {
+            font-size: 8px;
+            color: #999;
+        }
+
+        /* Информационная панель */
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            min-height: 40px;
+            align-items: center;
+        }
+
+        .info-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .info-label {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        /* Выбор сложности */
+        .difficulty-selector {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .difficulty-btn {
+            padding: 6px 10px;
+            border: 2px solid #764ba2;
+            background: white;
+            color: #764ba2;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .difficulty-btn.active {
+            background: #764ba2;
+            color: white;
+        }
+
+        /* Панель управления */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 колонок */
+            grid-template-rows: repeat(3, 1fr); /* 3 строки */
+            gap: 4px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        /* Стили для action-кнопок в сетке */
+        .number-pad .action-btn {
+            padding: 8px; /* Уменьшаем padding */
+            font-size: 12px; /* Уменьшаем шрифт */
+            min-height: 35px; /* Уменьшаем высоту */
+            grid-column: span 1; /* Каждая кнопка занимает 1 колонку */
+        }
+
+        .number-btn {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            height: 35px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .number-btn:hover, .number-btn:active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .number-btn.clear {
+            background: #ff6b6b;
+            color: white;
+            grid-column: span 1;
+        }
+
+        .number-btn.undo {
+            background: #4ecdc4;
+            color: white;
+            grid-column: span 1;
+        }
+
+        .number-btn.hint {
+            background: #ffd166;
+            color: white;
+            grid-column: span 1;
+            font-size: 14px;
+        }
+
+        .number-btn.hint i {
+            margin-right: 4px;
+        }
+
+      /*  .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            width: 100%;
+        } */
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 40px;
+        }
+
+        .action-btn i {
+            font-size: 16px;
+        }
+
+        .action-btn.new-game {
+            background: #764ba2;
+            color: white;
+        }
+
+        .action-btn.check {
+            background: #4ecdc4;
+            color: white;
+        }
+
+        .action-btn.solve {
+            background: #06d6a0;
+            color: white;
+        }
+
+        .action-btn:hover, .action-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Мобильная оптимизация */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+                margin: 2px;
+            }
+            
+            .sudoku-grid {
+                max-width: 100%;
+            }
+            
+            .sudoku-cell {
+                font-size: 14px;
+            }
+            
+            .number-btn {
+                height: 32px;
+                font-size: 14px;
+            }
+            
+            .number-btn.hint {
+                font-size: 12px;
+            }
+            
+            .action-btn {
+                padding: 8px;
+                font-size: 12px;
+                min-height: 36px;
+            }
+            
+            .info-value {
+                font-size: 14px;
+            }
+            
+            .difficulty-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+                max-width: 70px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .sudoku-cell {
+                font-size: 12px;
+            }
+            
+            .number-btn {
+                height: 28px;
+                font-size: 12px;
+            }
+            
+            .action-btn {
+                padding: 6px;
+                font-size: 11px;
+                min-height: 32px;
+            }
+            
+            .info-value {
+                font-size: 12px;
+            }
+            
+            .difficulty-btn {
+                padding: 4px 6px;
+                font-size: 10px;
+                max-width: 65px;
+            }
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 300px;
+            width: 90%;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal h2 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .modal p {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            background: #764ba2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:hover {
+            background: #667eea;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container fade-in">
+        <div class="header">
+            <h1><i class="fas fa-th"></i> Судоку</h1>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="info-label">Сложность</div>
+                <div class="info-value" id="difficulty-display">Средняя</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Ошибки</div>
+                <div class="info-value" id="error-count">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Подсказки</div>
+                <div class="info-value" id="hint-count">3</div>
+            </div>
+        </div>
+
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" data-difficulty="easy">Легкая</button>
+            <button class="difficulty-btn" data-difficulty="medium">Средняя</button>
+            <button class="difficulty-btn" data-difficulty="hard">Сложная</button>
+            <button class="difficulty-btn" data-difficulty="expert">Эксперт</button>
+        </div>
+
+        <div class="sudoku-grid" id="sudoku-grid">
+            <!-- Сетка будет сгенерирована JavaScript -->
+        </div>
+
+        <div class="controls">
+            <div class="number-pad">
+                <!-- Первая строка: 1-5 -->
+                <button class="number-btn" data-number="1">1</button>
+                <button class="number-btn" data-number="2">2</button>
+                <button class="number-btn" data-number="3">3</button>
+                <button class="number-btn" data-number="4">4</button>
+                <button class="number-btn" data-number="5">5</button>
+                
+                <!-- Вторая строка: 6-9 + ластик -->
+                <button class="number-btn" data-number="6">6</button>
+                <button class="number-btn" data-number="7">7</button>
+                <button class="number-btn" data-number="8">8</button>
+                <button class="number-btn" data-number="9">9</button>
+                <button class="number-btn clear" id="clear-btn"><i class="fas fa-eraser"></i></button>
+                
+                <!-- Третья строка: отменить, подсказка и основные кнопки -->
+                <button class="number-btn undo" id="undo-btn"><i class="fas fa-undo"></i></button>
+                <button class="number-btn hint" id="hint-btn"><i class="fas fa-lightbulb"></i> Подсказка</button>
+                <button class="action-btn new-game" id="new-game-btn">
+                    <i class="fas fa-plus-circle"></i> Новая
+                </button>
+                <button class="action-btn check" id="check-btn">
+                    <i class="fas fa-check-circle"></i> Проверить
+                </button>
+                <button class="action-btn solve" id="solve-btn">
+                    <i class="fas fa-magic"></i> Решить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно победы -->
+    <div class="modal" id="win-modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-trophy"></i> Поздравляем!</h2>
+            <p>Вы успешно решили судоку!</p>
+            <p>Ошибок: <span id="win-errors">0</span></p>
+            <button class="modal-btn" id="play-again-btn">Играть снова</button>
+        </div>
+    </div>
+
+    <script>
+        class SudokuGame {
+            constructor() {
+                this.board = Array(9).fill().map(() => Array(9).fill(0));
+                this.solution = Array(9).fill().map(() => Array(9).fill(0));
+                this.original = Array(9).fill().map(() => Array(9).fill(0));
+                this.selectedCell = null;
+                this.errors = 0;
+                this.hints = 3;
+                this.history = [];
+                this.difficulty = 'medium';
+                this.difficultySettings = {
+                    easy: { removeCount: 40 },
+                    medium: { removeCount: 50 },
+                    hard: { removeCount: 55 },
+                    expert: { removeCount: 60 }
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.generateNewGame();
+                this.renderGrid();
+                this.setupEventListeners();
+            }
+            
+            // Генератор судоку
+            generateNewGame() {
+                // Создаем полную правильную сетку
+                this.generateFullGrid();
+                // Копируем решение
+                this.solution = this.board.map(row => [...row]);
+                // Удаляем числа в зависимости от сложности
+                this.removeNumbers();
+                // Сохраняем оригинал
+                this.original = this.board.map(row => [...row]);
+                // Сбрасываем статистику
+                this.errors = 0;
+                this.hints = 3;
+                this.history = [];
+                this.updateStats();
+            }
+            
+            generateFullGrid() {
+                // Заполняем нулями
+                this.board = Array(9).fill().map(() => Array(9).fill(0));
+                
+                // Заполняем диагональные блоки 3x3 (они независимы)
+                for (let i = 0; i < 9; i += 3) {
+                    this.fillBlock(i, i);
+                }
+                
+                // Решаем оставшуюся часть
+                this.solveGrid();
+            }
+            
+            fillBlock(row, col) {
+                const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                this.shuffleArray(numbers);
+                
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        this.board[row + i][col + j] = numbers.pop();
+                    }
+                }
+            }
+            
+            solveGrid() {
+                const empty = this.findEmptyCell();
+                if (!empty) return true;
+                
+                const [row, col] = empty;
+                const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+                this.shuffleArray(numbers);
+                
+                for (const num of numbers) {
+                    if (this.isValidMove(row, col, num)) {
+                        this.board[row][col] = num;
+                        
+                        if (this.solveGrid()) {
+                            return true;
+                        }
+                        
+                        this.board[row][col] = 0;
+                    }
+                }
+                
+                return false;
+            }
+            
+            removeNumbers() {
+                const removeCount = this.difficultySettings[this.difficulty].removeCount;
+                let removed = 0;
+                
+                while (removed < removeCount) {
+                    const row = Math.floor(Math.random() * 9);
+                    const col = Math.floor(Math.random() * 9);
+                    
+                    if (this.board[row][col] !== 0) {
+                        // Сохраняем значение перед удалением
+                        const backup = this.board[row][col];
+                        this.board[row][col] = 0;
+                        
+                        // Проверяем, что решение остается уникальным
+                        if (this.countSolutions() === 1) {
+                            removed++;
+                        } else {
+                            // Восстанавливаем если решение не уникально
+                            this.board[row][col] = backup;
+                        }
+                    }
+                }
+            }
+            
+            countSolutions() {
+                const boardCopy = this.board.map(row => [...row]);
+                let count = 0;
+                
+                const solve = (board) => {
+                    const empty = this.findEmptyCellInBoard(board);
+                    if (!empty) {
+                        count++;
+                        return count > 1; // Останавливаем если нашли больше 1 решения
+                    }
+                    
+                    const [row, col] = empty;
+                    for (let num = 1; num <= 9; num++) {
+                        if (this.isValidMoveInBoard(board, row, col, num)) {
+                            board[row][col] = num;
+                            if (solve(board)) return true;
+                            board[row][col] = 0;
+                        }
+                    }
+                    return false;
+                };
+                
+                solve(boardCopy);
+                return count;
+            }
+            
+            findEmptyCell() {
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (this.board[row][col] === 0) {
+                            return [row, col];
+                        }
+                    }
+                }
+                return null;
+            }
+            
+            findEmptyCellInBoard(board) {
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (board[row][col] === 0) {
+                            return [row, col];
+                        }
+                    }
+                }
+                return null;
+            }
+            
+            isValidMove(row, col, num) {
+                return this.isValidMoveInBoard(this.board, row, col, num);
+            }
+            
+            isValidMoveInBoard(board, row, col, num) {
+                // Проверка строки
+                for (let x = 0; x < 9; x++) {
+                    if (board[row][x] === num) return false;
+                }
+                
+                // Проверка столбца
+                for (let y = 0; y < 9; y++) {
+                    if (board[y][col] === num) return false;
+                }
+                
+                // Проверка блока 3x3
+                const blockRow = Math.floor(row / 3) * 3;
+                const blockCol = Math.floor(col / 3) * 3;
+                
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        if (board[blockRow + i][blockCol + j] === num) return false;
+                    }
+                }
+                
+                return true;
+            }
+            
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // Рендеринг сетки
+            renderGrid() {
+                const grid = document.getElementById('sudoku-grid');
+                grid.innerHTML = '';
+                
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'sudoku-cell';
+                        cell.dataset.row = row;
+                        cell.dataset.col = col;
+                        
+                        const value = this.board[row][col];
+                        if (value !== 0) {
+                            cell.textContent = value;
+                            if (this.original[row][col] !== 0) {
+                                cell.classList.add('fixed');
+                            } else {
+                                cell.classList.add('user-input');
+                            }
+                        }
+                        
+                        cell.addEventListener('click', () => this.selectCell(row, col));
+                        grid.appendChild(cell);
+                    }
+                }
+                
+                if (this.selectedCell) {
+                    this.highlightRelatedCells(this.selectedCell[0], this.selectedCell[1]);
+                }
+            }
+            
+            selectCell(row, col) {
+                // Нельзя выбирать фиксированные клетки
+                if (this.original[row][col] !== 0) return;
+                
+                // Снимаем выделение с предыдущей клетки
+                if (this.selectedCell) {
+                    const [prevRow, prevCol] = this.selectedCell;
+                    const prevCell = document.querySelector(`[data-row="${prevRow}"][data-col="${prevCol}"]`);
+                    if (prevCell) prevCell.classList.remove('selected');
+                }
+                
+                // Выделяем новую клетку
+                this.selectedCell = [row, col];
+                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                cell.classList.add('selected');
+                
+                // Подсвечиваем связанные клетки
+                this.highlightRelatedCells(row, col);
+            }
+            
+            highlightRelatedCells(row, col) {
+                // Снимаем подсветку со всех клеток
+                document.querySelectorAll('.sudoku-cell').forEach(cell => {
+                    cell.classList.remove('highlighted');
+                    cell.classList.remove('error');
+                });
+                
+                // Подсвечиваем строку, столбец и блок
+                for (let i = 0; i < 9; i++) {
+                    // Строка
+                    const rowCell = document.querySelector(`[data-row="${row}"][data-col="${i}"]`);
+                    if (rowCell && !rowCell.classList.contains('selected')) {
+                        rowCell.classList.add('highlighted');
+                    }
+                    
+                    // Столбец
+                    const colCell = document.querySelector(`[data-row="${i}"][data-col="${col}"]`);
+                    if (colCell && !colCell.classList.contains('selected')) {
+                        colCell.classList.add('highlighted');
+                    }
+                }
+                
+                // Блок 3x3
+                const blockRow = Math.floor(row / 3) * 3;
+                const blockCol = Math.floor(col / 3) * 3;
+                
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        const cell = document.querySelector(`[data-row="${blockRow + i}"][data-col="${blockCol + j}"]`);
+                        if (cell && !cell.classList.contains('selected')) {
+                            cell.classList.add('highlighted');
+                        }
+                    }
+                }
+                
+                // Подсвечиваем клетки с такими же числами
+                const currentValue = this.board[row][col];
+                if (currentValue !== 0) {
+                    document.querySelectorAll('.sudoku-cell').forEach(cell => {
+                        if (parseInt(cell.textContent) === currentValue && !cell.classList.contains('selected')) {
+                            cell.classList.add('highlighted');
+                        }
+                    });
+                }
+            }
+            
+            // Ввод чисел
+            inputNumber(num) {
+                if (!this.selectedCell) return;
+                
+                const [row, col] = this.selectedCell;
+                if (this.original[row][col] !== 0) return;
+                
+                // Сохраняем в историю для отмены
+                this.history.push({
+                    row, col,
+                    oldValue: this.board[row][col],
+                    newValue: num
+                });
+                
+                // Устанавливаем значение
+                this.board[row][col] = num;
+                
+                // Проверяем правильность
+                const isCorrect = num === this.solution[row][col];
+                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                
+                cell.textContent = num === 0 ? '' : num;
+                cell.classList.remove('error');
+                
+                if (num !== 0) {
+                    cell.classList.add('user-input');
+                    if (!isCorrect) {
+                        cell.classList.add('error');
+                        this.errors++;
+                        this.updateStats();
+                    }
+                } else {
+                    cell.classList.remove('user-input');
+                }
+                
+                // Обновляем подсветку
+                this.highlightRelatedCells(row, col);
+                
+                // Проверяем завершение игры
+                if (this.isComplete() && this.isCorrect()) {
+                    this.showWinModal();
+                }
+            }
+            
+            clearCell() {
+                if (!this.selectedCell) return;
+                this.inputNumber(0);
+            }
+            
+            undo() {
+                if (this.history.length === 0) return;
+                
+                const lastMove = this.history.pop();
+                const { row, col, oldValue } = lastMove;
+                
+                this.board[row][col] = oldValue;
+                
+                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                cell.textContent = oldValue === 0 ? '' : oldValue;
+                cell.classList.remove('error');
+                
+                if (oldValue !== 0) {
+                    cell.classList.add('user-input');
+                } else {
+                    cell.classList.remove('user-input');
+                }
+                
+                // Если была ошибка, уменьшаем счетчик
+                if (lastMove.newValue !== this.solution[row][col] && oldValue === this.solution[row][col]) {
+                    this.errors = Math.max(0, this.errors - 1);
+                    this.updateStats();
+                }
+                
+                this.highlightRelatedCells(row, col);
+            }
+            
+            giveHint() {
+                if (this.hints <= 0 || !this.selectedCell) return;
+                
+                const [row, col] = this.selectedCell;
+                if (this.board[row][col] !== 0) return;
+                
+                const correctValue = this.solution[row][col];
+                this.inputNumber(correctValue);
+                
+                this.hints--;
+                this.updateStats();
+                
+                // Анимация подсказки
+                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                cell.classList.add('pulse');
+                setTimeout(() => cell.classList.remove('pulse'), 300);
+            }
+            
+            // Проверка решения
+            checkSolution() {
+                let hasErrors = false;
+                
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                        const value = this.board[row][col];
+                        
+                        if (value !== 0 && value !== this.solution[row][col]) {
+                            cell.classList.add('error');
+                            hasErrors = true;
+                        } else {
+                            cell.classList.remove('error');
+                        }
+                    }
+                }
+                
+                if (!hasErrors && this.isComplete()) {
+                    this.showWinModal();
+                } else if (!hasErrors) {
+                    alert('Все заполненные клетки верны! Продолжайте.');
+                } else {
+                    alert('Есть ошибки. Проверьте выделенные красным клетки.');
+                }
+            }
+            
+            solvePuzzle() {
+                if (!confirm('Вы уверены? Это завершит игру.')) return;
+                
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        this.board[row][col] = this.solution[row][col];
+                    }
+                }
+                
+                this.renderGrid();
+                this.showWinModal();
+            }
+            
+            isComplete() {
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (this.board[row][col] === 0) return false;
+                    }
+                }
+                return true;
+            }
+            
+            isCorrect() {
+                for (let row = 0; row < 9; row++) {
+                    for (let col = 0; col < 9; col++) {
+                        if (this.board[row][col] !== this.solution[row][col]) return false;
+                    }
+                }
+                return true;
+            }
+            
+            // Обновление статистики
+            updateStats() {
+                document.getElementById('error-count').textContent = this.errors;
+                document.getElementById('hint-count').textContent = this.hints;
+                document.getElementById('difficulty-display').textContent = 
+                    this.getDifficultyName(this.difficulty);
+            }
+            
+            getDifficultyName(diff) {
+                const names = {
+                    easy: 'Легкая',
+                    medium: 'Средняя',
+                    hard: 'Сложная',
+                    expert: 'Эксперт'
+                };
+                return names[diff] || 'Средняя';
+            }
+            
+            // Модальное окно победы
+            showWinModal() {
+                document.getElementById('win-errors').textContent = this.errors;
+                document.getElementById('win-modal').style.display = 'flex';
+            }
+            
+            // Обработчики событий
+            setupEventListeners() {
+                // Кнопки цифр
+                document.querySelectorAll('.number-btn[data-number]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const num = parseInt(btn.dataset.number);
+                        this.inputNumber(num);
+                    });
+                });
+                
+                // Специальные кнопки
+                document.getElementById('clear-btn').addEventListener('click', () => this.clearCell());
+                document.getElementById('undo-btn').addEventListener('click', () => this.undo());
+                document.getElementById('hint-btn').addEventListener('click', () => this.giveHint());
+                
+                // Кнопки действий
+                document.getElementById('new-game-btn').addEventListener('click', () => {
+                    this.generateNewGame();
+                    this.renderGrid();
+                });
+                
+                document.getElementById('check-btn').addEventListener('click', () => this.checkSolution());
+                document.getElementById('solve-btn').addEventListener('click', () => this.solvePuzzle());
+                
+                // Выбор сложности
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.difficulty = btn.dataset.difficulty;
+                        this.generateNewGame();
+                        this.renderGrid();
+                    });
+                });
+                
+                // Модальное окно
+                document.getElementById('play-again-btn').addEventListener('click', () => {
+                    document.getElementById('win-modal').style.display = 'none';
+                    this.generateNewGame();
+                    this.renderGrid();
+                });
+                
+                // Управление с клавиатуры
+                document.addEventListener('keydown', (e) => {
+                    if (e.key >= '1' && e.key <= '9') {
+                        this.inputNumber(parseInt(e.key));
+                    } else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') {
+                        this.clearCell();
+                    } else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
+                        this.undo();
+                    } else if (e.key === 'ArrowUp' && this.selectedCell) {
+                        const [row, col] = this.selectedCell;
+                        if (row > 0) this.selectCell(row - 1, col);
+                    } else if (e.key === 'ArrowDown' && this.selectedCell) {
+                        const [row, col] = this.selectedCell;
+                        if (row < 8) this.selectCell(row + 1, col);
+                    } else if (e.key === 'ArrowLeft' && this.selectedCell) {
+                        const [row, col] = this.selectedCell;
+                        if (col > 0) this.selectCell(row, col - 1);
+                    } else if (e.key === 'ArrowRight' && this.selectedCell) {
+                        const [row, col] = this.selectedCell;
+                        if (col < 8) this.selectCell(row, col + 1);
+                    }
+                });
+                
+                // Свайпы для мобильных устройств
+                let touchStartX = 0;
+                let touchStartY = 0;
+                
+                document.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+                
+                document.addEventListener('touchend', (e) => {
+                    if (!this.selectedCell) return;
+                    
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const touchEndY = e.changedTouches[0].clientY;
+                    
+                    const dx = touchEndX - touchStartX;
+                    const dy = touchEndY - touchStartY;
+                    const [row, col] = this.selectedCell;
+                    
+                    // Определяем направление свайпа
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        // Горизонтальный свайп
+                        if (dx > 30 && col < 8) {
+                            this.selectCell(row, col + 1);
+                        } else if (dx < -30 && col > 0) {
+                            this.selectCell(row, col - 1);
+                        }
+                    } else {
+                        // Вертикальный свайп
+                        if (dy > 30 && row < 8) {
+                            this.selectCell(row + 1, col);
+                        } else if (dy < -30 && row > 0) {
+                            this.selectCell(row - 1, col);
+                        }
+                    }
+                }, { passive: true });
+                
+                // Двойное нажатие для очистки
+                let lastTap = 0;
+                document.addEventListener('touchend', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapLength = currentTime - lastTap;
+                    
+                    if (tapLength < 500 && tapLength > 0) {
+                        // Двойное нажатие
+                        this.clearCell();
+                    }
+                    
+                    lastTap = currentTime;
+                }, { passive: true });
+                
+                // Предотвращение масштабирования при двойном нажатии
+                document.addEventListener('touchmove', (e) => {
+                    if (e.scale !== 1) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+            }
+        }
+        
+        // Инициализация игры при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            window.sudokuGame = new SudokuGame();
+            
+            // Добавляем вибрацию для мобильных устройств (если поддерживается)
+            if ('vibrate' in navigator) {
+                document.querySelectorAll('.number-btn, .action-btn').forEach(btn => {
+                    btn.addEventListener('touchstart', () => {
+                        navigator.vibrate(10);
+                    });
+                });
+            }
+            
+            // Предотвращаем контекстное меню на мобильных устройствах
+            document.addEventListener('contextmenu', (e) => {
+                if (e.target.classList.contains('sudoku-cell')) {
+                    e.preventDefault();
+                }
+            });
+            
+            // Адаптация для различных устройств
+            const adjustForDevice = () => {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                const isTablet = /iPad|Android(?!.*Mobile)|Tablet/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                    document.body.style.fontSize = '14px';
+                }
+                
+                if (isTablet) {
+                    document.querySelector('.container').style.maxWidth = '600px';
+                }
+            };
+            
+            adjustForDevice();
+            window.addEventListener('resize', adjustForDevice);
+            
+            // Сохранение прогресса в localStorage
+            const saveProgress = () => {
+                if (window.sudokuGame) {
+                    const progress = {
+                        board: window.sudokuGame.board,
+                        original: window.sudokuGame.original,
+                        solution: window.sudokuGame.solution,
+                        errors: window.sudokuGame.errors,
+                        hints: window.sudokuGame.hints,
+                        difficulty: window.sudokuGame.difficulty,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem('sudokuProgress', JSON.stringify(progress));
+                }
+            };
+            
+            const loadProgress = () => {
+                try {
+                    const saved = localStorage.getItem('sudokuProgress');
+                    if (saved) {
+                        const progress = JSON.parse(saved);
+                        // Проверяем, не устарели ли сохранения (старше 1 дня)
+                        if (Date.now() - progress.timestamp < 24 * 60 * 60 * 1000) {
+                            window.sudokuGame.board = progress.board;
+                            window.sudokuGame.original = progress.original;
+                            window.sudokuGame.solution = progress.solution;
+                            window.sudokuGame.errors = progress.errors;
+                            window.sudokuGame.hints = progress.hints;
+                            window.sudokuGame.difficulty = progress.difficulty;
+                            window.sudokuGame.renderGrid();
+                            window.sudokuGame.updateStats();
+                            
+                            // Устанавливаем активную кнопку сложности
+                            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                                btn.classList.remove('active');
+                                if (btn.dataset.difficulty === progress.difficulty) {
+                                    btn.classList.add('active');
+                                }
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.log('Не удалось загрузить сохраненную игру');
+                }
+            };
+            
+            // Автосохранение каждые 30 секунд
+            setInterval(saveProgress, 30000);
+            
+            // Загрузка при старте
+            loadProgress();
+            
+            // Сохранение при закрытии страницы
+            window.addEventListener('beforeunload', saveProgress);
+            
+            // Обработка изменения ориентации экрана
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    window.sudokuGame.renderGrid();
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>
