@@ -330,10 +330,13 @@
             
             .action-btn {
                 padding: 8px;
-                font-size: 12px;
-                min-height: 36px;
+                font-size: 10px;
+                min-height: 32px;
             }
-            
+            .action-btn svg {
+                width: 14px; /* Уменьшаем размер иконок */
+                height: 14px; /* Уменьшаем размер иконок */
+            }
             .info-value {
                 font-size: 14px;
             }
@@ -360,10 +363,13 @@
             
             .action-btn {
                 padding: 6px;
-                font-size: 11px;
-                min-height: 32px;
+                font-size: 8px;
+                min-height: 28px;
             }
-            
+            .action-btn svg {
+            width: 12px; /* Еще меньше иконки */
+            height: 12px; /* Еще меньше иконки */
+            }
             .info-value {
                 font-size: 12px;
             }
@@ -374,7 +380,38 @@
                 max-width: 65px;
             }
         }
-
+        @media (max-width: 320px) {
+            .sudoku-cell {
+                font-size: 11px;
+            }
+            .number-pad {
+            gap: 1px;
+            grid-auto-rows: 1fr; /* ДОБАВЛЕНО */
+            }
+            .number-btn {
+                height: 26px;
+                font-size: 10px;
+            }
+            
+            .action-btn {
+                padding: 5px;
+                font-size: 7px;
+                min-height: 26px;
+            }
+            .action-btn svg {
+            width: 10px; /* Еще меньше иконки */
+            height: 10px; /* Еще меньше иконки */
+            }
+            .info-value {
+                font-size: 10px;
+            }
+            
+            .difficulty-btn {
+                padding: 4px 6px;
+                font-size: 9px;
+                max-width: 60px;
+            }
+        }
         /* Анимации */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
