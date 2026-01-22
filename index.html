@@ -3,380 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Судоку - Мобильная игра</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Galaxy Defender - Космический шутер</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a2a, #1a1a3a);
+            color: #fff;
             min-height: 100vh;
-            padding: 5px;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-
+        
         .container {
             width: 100%;
-            max-width: 500px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            padding: 15px;
-            margin: 5px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 5px; /* Уменьшили отступ снизу */
-            padding-bottom: 0; /* Убрали отступ снизу */
-        }
-
-        .header h1 {
-            color: #764ba2;
-            font-size: 18px; /* Уменьшили размер шрифта */
-            margin-bottom: 0; /* Убрали отступ снизу */
-        }
-
-        /* Сетка судоку */
-        .sudoku-grid {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            grid-template-rows: repeat(9, 1fr);
-            gap: 1px;
-            background: #333;
-            border: 2px solid #333;
-            border-radius: 4px;
-            margin: 0 auto 15px;
-            width: 100%;
-            max-width: 350px;
-            aspect-ratio: 1/1;
-        }
-
-        .sudoku-cell {
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            user-select: none;
-        }
-
-        .sudoku-cell:nth-child(3n) {
-            border-right: 2px solid #333;
-        }
-
-        .sudoku-cell:nth-child(9n) {
-            border-right: none;
-        }
-
-        .sudoku-cell:nth-child(n+19):nth-child(-n+27),
-        .sudoku-cell:nth-child(n+46):nth-child(-n+54) {
-            border-bottom: 2px solid #333;
-        }
-
-        .sudoku-cell.fixed {
-            color: #764ba2;
-            font-weight: 900;
-        }
-
-        .sudoku-cell.user-input {
-            color: #667eea;
-        }
-
-        .sudoku-cell.selected {
-            background: #e6e6ff;
-        }
-
-        .sudoku-cell.highlighted {
-            background: #f0f0ff;
-        }
-
-        .sudoku-cell.error {
-            background: #ffe6e6;
-            color: #ff3333;
-        }
-
-        .sudoku-cell.candidate {
-            font-size: 8px;
-            color: #999;
-        }
-
-        /* Информационная панель */
-        .info-panel {
-            display: flex;
-            justify-content: space-between;
-            background: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            min-height: 40px;
-            align-items: center;
-        }
-
-        .info-item {
-            text-align: center;
-            flex: 1;
-        }
-
-        .info-label {
-            font-size: 10px;
-            color: #666;
-            margin-bottom: 2px;
-        }
-
-        .info-value {
-            font-size: 16px;
-            font-weight: bold;
-            color: #764ba2;
-        }
-
-        /* Выбор сложности */
-        .difficulty-selector {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
-            justify-content: center;
-        }
-
-        .difficulty-btn {
-            padding: 6px 10px;
-            border: 2px solid #764ba2;
-            background: white;
-            color: #764ba2;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1;
-            max-width: 80px;
-        }
-
-        .difficulty-btn.active {
-            background: #764ba2;
-            color: white;
-        }
-
-        /* Панель управления */
-        .controls {
+            max-width: 800px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
             margin-bottom: 10px;
+            background: linear-gradient(45deg, #00aaff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
         }
-
-        .number-pad {
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0ff;
+            margin-bottom: 20px;
+        }
+        
+        .game-area {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 170, 255, 0.3);
+        }
+        
+        #gameCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .stats-panel {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5 колонок */
-            grid-template-rows: repeat(3, 1fr); /* 3 строки */
-            gap: 4px;
-            margin-bottom: 8px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
             width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00aaff;
         }
-
-        /* Стили для action-кнопок в сетке */
-        .number-pad .action-btn {
-            padding: 8px; /* Уменьшаем padding */
-            font-size: 12px; /* Уменьшаем шрифт */
-            min-height: 35px; /* Уменьшаем высоту */
-            grid-column: span 1; /* Каждая кнопка занимает 1 колонку */
-        }
-
-        .number-btn {
-            background: #f0f0f0;
-            border: none;
-            border-radius: 8px;
-            height: 35px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            cursor: pointer;
-            transition: all 0.2s;
+        
+        .stat-item {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            gap: 5px;
         }
-
-        .number-btn:hover, .number-btn:active {
-            background: #667eea;
-            color: white;
-            transform: translateY(-1px);
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #a0a0ff;
         }
-
-        .number-btn.clear {
-            background: #ff6b6b;
-            color: white;
-            grid-column: span 1;
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ffaa;
         }
-
-        .number-btn.undo {
-            background: #4ecdc4;
-            color: white;
-            grid-column: span 1;
-        }
-
-        .number-btn.hint {
-            background: #ffd166;
-            color: white;
-            grid-column: span 1;
-            font-size: 14px;
-        }
-
-        .number-btn.hint i {
-            margin-right: 4px;
-        }
-
-      /*  .action-buttons {
+        
+        .controls {
             display: flex;
-            gap: 8px;
-            justify-content: center;
+            gap: 15px;
             width: 100%;
-        } */
-
-        .action-btn {
+        }
+        
+        button {
             flex: 1;
-            padding: 10px;
+            padding: 15px;
+            font-size: 1.1rem;
+            background: linear-gradient(45deg, #00aaff, #0088ff);
+            color: white;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            min-height: 40px;
+            transition: all 0.3s;
+            font-weight: bold;
         }
-
-        .action-btn i {
-            font-size: 16px;
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 170, 255, 0.4);
         }
-
-        .action-btn.new-game {
-            background: #764ba2;
-            color: white;
+        
+        button:active {
+            transform: translateY(0);
         }
-
-        .action-btn.check {
-            background: #4ecdc4;
-            color: white;
+        
+        .instructions {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #ff00ff;
+            margin-top: 20px;
+            max-width: 600px;
         }
-
-        .action-btn.solve {
-            background: #06d6a0;
-            color: white;
+        
+        .instructions h3 {
+            color: #ff00ff;
+            margin-bottom: 15px;
+            text-align: center;
         }
-
-        .action-btn:hover, .action-btn:active {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        
+        .instructions ul {
+            list-style: none;
+            padding-left: 20px;
         }
-
-        /* Мобильная оптимизация */
-        @media (max-width: 480px) {
-            .container {
-                padding: 10px;
-                margin: 2px;
-            }
-            
-            .sudoku-grid {
-                max-width: 100%;
-            }
-            
-            .sudoku-cell {
-                font-size: 14px;
-            }
-            
-            .number-btn {
-                height: 32px;
-                font-size: 14px;
-            }
-            
-            .number-btn.hint {
-                font-size: 12px;
-            }
-            
-            .action-btn {
-                padding: 8px;
-                font-size: 12px;
-                min-height: 36px;
-            }
-            
-            .info-value {
-                font-size: 14px;
-            }
-            
-            .difficulty-btn {
-                padding: 5px 8px;
-                font-size: 11px;
-                max-width: 70px;
-            }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+            border-left: 3px solid #00aaff;
         }
-
-        @media (max-width: 360px) {
-            .sudoku-cell {
-                font-size: 12px;
-            }
-            
-            .number-btn {
-                height: 28px;
-                font-size: 12px;
-            }
-            
-            .action-btn {
-                padding: 6px;
-                font-size: 11px;
-                min-height: 32px;
-            }
-            
-            .info-value {
-                font-size: 12px;
-            }
-            
-            .difficulty-btn {
-                padding: 4px 6px;
-                font-size: 10px;
-                max-width: 65px;
-            }
+        
+        .bonus-panel {
+            background: rgba(0, 50, 100, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #00aaff;
+            width: 100%;
+            min-height: 60px;
         }
-
-        /* Анимации */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .bonus-panel h4 {
+            color: #00ffaa;
+            margin-bottom: 5px;
+            text-align: center;
         }
-
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 0.3s ease-in-out;
-        }
-
-        /* Модальное окно */
+        
         .modal {
             display: none;
             position: fixed;
@@ -384,823 +178,1384 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
-
+        
         .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            max-width: 300px;
+            background: linear-gradient(135deg, #0a0a2a, #1a1a3a);
+            padding: 30px;
+            border-radius: 15px;
+            border: 3px solid #00aaff;
+            max-width: 500px;
             width: 90%;
             text-align: center;
-            animation: fadeIn 0.3s ease-out;
         }
-
+        
         .modal h2 {
-            color: #764ba2;
-            margin-bottom: 10px;
-            font-size: 18px;
+            color: #00ffaa;
+            margin-bottom: 20px;
         }
-
+        
         .modal p {
             margin-bottom: 15px;
-            color: #666;
-            font-size: 14px;
+            line-height: 1.6;
         }
-
-        .modal-btn {
-            padding: 10px 20px;
-            background: #764ba2;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
+        
+        .touch-indicator {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 170, 255, 0.3);
+            border: 2px solid #00aaff;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-
-        .modal-btn:hover {
-            background: #667eea;
-            transform: translateY(-1px);
+        
+        .touch-indicator.active {
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+            
+            .stats-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .stat-value {
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container fade-in">
+    <div class="container">
         <div class="header">
-            <h1><i class="fas fa-th"></i> Судоку</h1>
+            <h1>🌌 GALAXY DEFENDER</h1>
+            <p class="subtitle">Зажмите корабль пальцем и уничтожайте врагов!</p>
         </div>
-
-        <div class="info-panel">
-            <div class="info-item">
-                <div class="info-label">Сложность</div>
-                <div class="info-value" id="difficulty-display">Средняя</div>
+        
+        <div class="game-area">
+            <canvas id="gameCanvas"></canvas>
+            <div class="touch-indicator" id="touchIndicator"></div>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stat-item">
+                <span class="stat-label">ОЧКИ</span>
+                <span class="stat-value" id="score">0</span>
             </div>
-            <div class="info-item">
-                <div class="info-label">Ошибки</div>
-                <div class="info-value" id="error-count">0</div>
+            <div class="stat-item">
+                <span class="stat-label">ВОЛНА</span>
+                <span class="stat-value" id="wave">1</span>
             </div>
-            <div class="info-item">
-                <div class="info-label">Подсказки</div>
-                <div class="info-value" id="hint-count">3</div>
+            <div class="stat-item">
+                <span class="stat-label">ЖИЗНИ</span>
+                <span class="stat-value" id="lives">3</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">ПОПАДАНИЯ</span>
+                <span class="stat-value" id="hits">0</span>
             </div>
         </div>
-
-        <div class="difficulty-selector">
-            <button class="difficulty-btn active" data-difficulty="easy">Легкая</button>
-            <button class="difficulty-btn" data-difficulty="medium">Средняя</button>
-            <button class="difficulty-btn" data-difficulty="hard">Сложная</button>
-            <button class="difficulty-btn" data-difficulty="expert">Эксперт</button>
+        
+        <div class="bonus-panel">
+            <h4>🎯 АКТИВНЫЕ БОНУСЫ</h4>
+            <div id="bonuses">
+                <div class="bonus-item">
+                    <span class="bonus-icon">🚫</span>
+                    <span>Нет активных бонусов</span>
+                </div>
+            </div>
         </div>
-
-        <div class="sudoku-grid" id="sudoku-grid">
-            <!-- Сетка будет сгенерирована JavaScript -->
-        </div>
-
+        
         <div class="controls">
-            <div class="number-pad">
-                <!-- Первая строка: 1-5 -->
-                <button class="number-btn" data-number="1">1</button>
-                <button class="number-btn" data-number="2">2</button>
-                <button class="number-btn" data-number="3">3</button>
-                <button class="number-btn" data-number="4">4</button>
-                <button class="number-btn" data-number="5">5</button>
-                
-                <!-- Вторая строка: 6-9 + ластик -->
-                <button class="number-btn" data-number="6">6</button>
-                <button class="number-btn" data-number="7">7</button>
-                <button class="number-btn" data-number="8">8</button>
-                <button class="number-btn" data-number="9">9</button>
-                <button class="number-btn clear" id="clear-btn"><i class="fas fa-eraser"></i></button>
-                
-                <!-- Третья строка: отменить, подсказка и основные кнопки -->
-                <button class="number-btn undo" id="undo-btn"><i class="fas fa-undo"></i></button>
-                <button class="number-btn hint" id="hint-btn"><i class="fas fa-lightbulb"></i> Подсказка</button>
-                <button class="action-btn new-game" id="new-game-btn">
-                    <i class="fas fa-plus-circle"></i> Новая
-                </button>
-                <button class="action-btn check" id="check-btn">
-                    <i class="fas fa-check-circle"></i> Проверить
-                </button>
-                <button class="action-btn solve" id="solve-btn">
-                    <i class="fas fa-magic"></i> Решить
-                </button>
-            </div>
+            <button onclick="showInstructions()">📖 ИНСТРУКЦИИ</button>
+            <button onclick="toggleSound()" id="soundBtn">🔊 ЗВУК ВКЛ</button>
+        </div>
+        
+        <div class="instructions">
+            <h3>🎮 КАК ИГРАТЬ:</h3>
+            <ul>
+                <li>Зажмите корабль пальцем/мышью и перемещайте по экрану</li>
+                <li>При зажатии корабль автоматически стреляет</li>
+                <li>Уничтожайте врагов, избегайте их выстрелов</li>
+                <li>5 попаданий → Тройной выстрел (3 сек)</li>
+                <li>10 попаданий → Восьмизарядный выстрел (5 сек)</li>
+                <li>Нажмите ESC или вне игры для паузы</li>
+            </ul>
         </div>
     </div>
-
-    <!-- Модальное окно победы -->
-    <div class="modal" id="win-modal">
+    
+    <!-- Модальное окно инструкций -->
+    <div class="modal" id="instructionsModal">
         <div class="modal-content">
-            <h2><i class="fas fa-trophy"></i> Поздравляем!</h2>
-            <p>Вы успешно решили судоку!</p>
-            <p>Ошибок: <span id="win-errors">0</span></p>
-            <button class="modal-btn" id="play-again-btn">Играть снова</button>
+            <h2>🎮 ИНСТРУКЦИЯ ПО ИГРЕ</h2>
+            <p><strong>Galaxy Defender</strong> - космический шутер с уникальным управлением касанием!</p>
+            
+            <h3>🎯 УПРАВЛЕНИЕ:</h3>
+            <p>• Зажмите корабль пальцем/мышью и перемещайте</p>
+            <p>• При зажатии корабль автоматически стреляет</p>
+            <p>• Отпустите, чтобы прекратить стрельбу</p>
+            
+            <h3>⚡ БОНУСЫ:</h3>
+            <p>• 5 попаданий → Тройной выстрел (3 секунды)</p>
+            <p>• 10 попаданий → Восьмизарядный выстрел (5 секунд)</p>
+            
+            <h3>🎮 УПРАВЛЕНИЕ ИГРОЙ:</h3>
+            <p>• ESC или касание вне игры - пауза</p>
+            <p>• Кнопка "ЗВУК" - включить/выключить звук</p>
+            
+            <button onclick="hideInstructions()" style="margin-top: 20px;">НАЧАТЬ ИГРУ!</button>
         </div>
     </div>
-
+    
+    <!-- Модальное окно Game Over -->
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2>💀 ИГРА ОКОНЧЕНА</h2>
+            <p id="gameOverReason">Поражение!</p>
+            
+            <div style="margin: 20px 0; font-size: 1.2rem;">
+                <p>🏆 ФИНАЛЬНЫЙ СЧЕТ: <span id="finalScore" style="color: #00ffaa;">0</span></p>
+                <p>🌊 ДОСТИГНУТАЯ ВОЛНА: <span id="finalWave" style="color: #00ffaa;">1</span></p>
+            </div>
+            
+            <button onclick="restartGame()">🔄 НАЧАТЬ ЗАНОВО</button>
+        </div>
+    </div>
+    
     <script>
-        class SudokuGame {
-            constructor() {
-                this.board = Array(9).fill().map(() => Array(9).fill(0));
-                this.solution = Array(9).fill().map(() => Array(9).fill(0));
-                this.original = Array(9).fill().map(() => Array(9).fill(0));
-                this.selectedCell = null;
-                this.errors = 0;
-                this.hints = 3;
-                this.history = [];
-                this.difficulty = 'medium';
-                this.difficultySettings = {
-                    easy: { removeCount: 40 },
-                    medium: { removeCount: 50 },
-                    hard: { removeCount: 55 },
-                    expert: { removeCount: 60 }
+        // ======================= КОНСТАНТЫ И ПЕРЕМЕННЫЕ =======================
+        const CANVAS_WIDTH = 800;
+        const CANVAS_HEIGHT = 600;
+        const FPS = 60;
+        const COLORS = {
+            BLUE: '#00aaff',
+            RED: '#ff5555',
+            GREEN: '#55ff55',
+            YELLOW: '#ffff55',
+            PURPLE: '#ff55ff',
+            WHITE: '#ffffff',
+            ORANGE: '#ffaa00'
+        };
+        
+        let canvas, ctx;
+        let game;
+        let soundEnabled = true;
+        // ======================= ЗАГРУЗКА ИЗОБРАЖЕНИЙ =======================
+        let images = {
+            player: null,
+            enemyNormal: null,
+            enemyStrong: null,
+            bullet: null
+        };
+
+        // Функция загрузки изображений
+        function loadImages() {
+            return new Promise((resolve) => {
+                let loaded = 0;
+                const total = Object.keys(images).length;
+                
+                function imageLoaded() {
+                    loaded++;
+                    if (loaded === total) {
+                        console.log('Все изображения загружены');
+                        resolve();
+                    }
+                }
+                
+                // Создаем объекты Image
+                images.player = new Image();
+                images.enemyNormal = new Image();
+                images.enemyStrong = new Image();
+                
+                // Назначаем обработчики до установки src
+                images.player.onload = imageLoaded;
+                images.player.onerror = () => {
+                    console.error('Не удалось загрузить изображение игрока');
+                    images.player = null;
+                    imageLoaded();
                 };
+                
+                images.enemyNormal.onload = imageLoaded;
+                images.enemyNormal.onerror = () => {
+                    console.error('Не удалось загрузить изображение обычного врага');
+                    images.enemyNormal = null;
+                    imageLoaded();
+                };
+                
+                images.enemyStrong.onload = imageLoaded;
+                images.enemyStrong.onerror = () => {
+                    console.error('Не удалось загрузить изображение сильного врага');
+                    images.enemyStrong = null;
+                    imageLoaded();
+                };
+                
+                // Теперь устанавливаем пути
+                images.player.src = 'player.png';
+                images.enemyNormal.src = 'enemyl.png';
+                images.enemyStrong.src = 'enemy2.png';
+                
+                // Если нет файлов, сразу резолвим
+                if (total === 0) {
+                    resolve();
+                }
+            });
+        }
+                
+        // ======================= СИСТЕМА ЗВУКОВ =======================
+        class AudioSystem {
+            constructor() {
+                this.audioContext = null;
+                this.sounds = {};
+                this.music = null;
+                this.musicPlaying = false;
                 
                 this.init();
             }
             
             init() {
-                this.generateNewGame();
-                this.renderGrid();
-                this.setupEventListeners();
-            }
-            
-            // Генератор судоку
-            generateNewGame() {
-                // Создаем полную правильную сетку
-                this.generateFullGrid();
-                // Копируем решение
-                this.solution = this.board.map(row => [...row]);
-                // Удаляем числа в зависимости от сложности
-                this.removeNumbers();
-                // Сохраняем оригинал
-                this.original = this.board.map(row => [...row]);
-                // Сбрасываем статистику
-                this.errors = 0;
-                this.hints = 3;
-                this.history = [];
-                this.updateStats();
-            }
-            
-            generateFullGrid() {
-                // Заполняем нулями
-                this.board = Array(9).fill().map(() => Array(9).fill(0));
-                
-                // Заполняем диагональные блоки 3x3 (они независимы)
-                for (let i = 0; i < 9; i += 3) {
-                    this.fillBlock(i, i);
-                }
-                
-                // Решаем оставшуюся часть
-                this.solveGrid();
-            }
-            
-            fillBlock(row, col) {
-                const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-                this.shuffleArray(numbers);
-                
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        this.board[row + i][col + j] = numbers.pop();
-                    }
+                try {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.createSounds();
+                    this.createMusic();
+                } catch (e) {
+                    console.log('Аудио не поддерживается:', e);
                 }
             }
             
-            solveGrid() {
-                const empty = this.findEmptyCell();
-                if (!empty) return true;
-                
-                const [row, col] = empty;
-                const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-                this.shuffleArray(numbers);
-                
-                for (const num of numbers) {
-                    if (this.isValidMove(row, col, num)) {
-                        this.board[row][col] = num;
-                        
-                        if (this.solveGrid()) {
-                            return true;
-                        }
-                        
-                        this.board[row][col] = 0;
-                    }
-                }
-                
-                return false;
-            }
-            
-            removeNumbers() {
-                const removeCount = this.difficultySettings[this.difficulty].removeCount;
-                let removed = 0;
-                
-                while (removed < removeCount) {
-                    const row = Math.floor(Math.random() * 9);
-                    const col = Math.floor(Math.random() * 9);
-                    
-                    if (this.board[row][col] !== 0) {
-                        // Сохраняем значение перед удалением
-                        const backup = this.board[row][col];
-                        this.board[row][col] = 0;
-                        
-                        // Проверяем, что решение остается уникальным
-                        if (this.countSolutions() === 1) {
-                            removed++;
-                        } else {
-                            // Восстанавливаем если решение не уникально
-                            this.board[row][col] = backup;
-                        }
-                    }
-                }
-            }
-            
-            countSolutions() {
-                const boardCopy = this.board.map(row => [...row]);
-                let count = 0;
-                
-                const solve = (board) => {
-                    const empty = this.findEmptyCellInBoard(board);
-                    if (!empty) {
-                        count++;
-                        return count > 1; // Останавливаем если нашли больше 1 решения
-                    }
-                    
-                    const [row, col] = empty;
-                    for (let num = 1; num <= 9; num++) {
-                        if (this.isValidMoveInBoard(board, row, col, num)) {
-                            board[row][col] = num;
-                            if (solve(board)) return true;
-                            board[row][col] = 0;
-                        }
-                    }
-                    return false;
+            createSounds() {
+                // Простые звуки с использованием Web Audio API
+                this.sounds = {
+                    shoot: this.createTone(800, 0.1, 'sawtooth'),
+                    enemyShoot: this.createTone(400, 0.1, 'square'),
+                    explosion: this.createExplosionSound(),
+                    hit: this.createTone(300, 0.05, 'sine'),
+                    bonus: this.createBonusSound(),
+                    wave: this.createWaveSound(),
+                    gameOver: this.createGameOverSound()
                 };
-                
-                solve(boardCopy);
-                return count;
             }
             
-            findEmptyCell() {
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        if (this.board[row][col] === 0) {
-                            return [row, col];
-                        }
-                    }
-                }
-                return null;
-            }
-            
-            findEmptyCellInBoard(board) {
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        if (board[row][col] === 0) {
-                            return [row, col];
-                        }
-                    }
-                }
-                return null;
-            }
-            
-            isValidMove(row, col, num) {
-                return this.isValidMoveInBoard(this.board, row, col, num);
-            }
-            
-            isValidMoveInBoard(board, row, col, num) {
-                // Проверка строки
-                for (let x = 0; x < 9; x++) {
-                    if (board[row][x] === num) return false;
-                }
-                
-                // Проверка столбца
-                for (let y = 0; y < 9; y++) {
-                    if (board[y][col] === num) return false;
-                }
-                
-                // Проверка блока 3x3
-                const blockRow = Math.floor(row / 3) * 3;
-                const blockCol = Math.floor(col / 3) * 3;
-                
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        if (board[blockRow + i][blockCol + j] === num) return false;
-                    }
-                }
-                
-                return true;
-            }
-            
-            shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
-            }
-            
-            // Рендеринг сетки
-            renderGrid() {
-                const grid = document.getElementById('sudoku-grid');
-                grid.innerHTML = '';
-                
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'sudoku-cell';
-                        cell.dataset.row = row;
-                        cell.dataset.col = col;
-                        
-                        const value = this.board[row][col];
-                        if (value !== 0) {
-                            cell.textContent = value;
-                            if (this.original[row][col] !== 0) {
-                                cell.classList.add('fixed');
-                            } else {
-                                cell.classList.add('user-input');
-                            }
-                        }
-                        
-                        cell.addEventListener('click', () => this.selectCell(row, col));
-                        grid.appendChild(cell);
-                    }
-                }
-                
-                if (this.selectedCell) {
-                    this.highlightRelatedCells(this.selectedCell[0], this.selectedCell[1]);
-                }
-            }
-            
-            selectCell(row, col) {
-                // Нельзя выбирать фиксированные клетки
-                if (this.original[row][col] !== 0) return;
-                
-                // Снимаем выделение с предыдущей клетки
-                if (this.selectedCell) {
-                    const [prevRow, prevCol] = this.selectedCell;
-                    const prevCell = document.querySelector(`[data-row="${prevRow}"][data-col="${prevCol}"]`);
-                    if (prevCell) prevCell.classList.remove('selected');
-                }
-                
-                // Выделяем новую клетку
-                this.selectedCell = [row, col];
-                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                cell.classList.add('selected');
-                
-                // Подсвечиваем связанные клетки
-                this.highlightRelatedCells(row, col);
-            }
-            
-            highlightRelatedCells(row, col) {
-                // Снимаем подсветку со всех клеток
-                document.querySelectorAll('.sudoku-cell').forEach(cell => {
-                    cell.classList.remove('highlighted');
-                    cell.classList.remove('error');
-                });
-                
-                // Подсвечиваем строку, столбец и блок
-                for (let i = 0; i < 9; i++) {
-                    // Строка
-                    const rowCell = document.querySelector(`[data-row="${row}"][data-col="${i}"]`);
-                    if (rowCell && !rowCell.classList.contains('selected')) {
-                        rowCell.classList.add('highlighted');
-                    }
+            createTone(frequency, duration, type = 'sine') {
+                return () => {
+                    if (!this.audioContext || !soundEnabled) return;
                     
-                    // Столбец
-                    const colCell = document.querySelector(`[data-row="${i}"][data-col="${col}"]`);
-                    if (colCell && !colCell.classList.contains('selected')) {
-                        colCell.classList.add('highlighted');
-                    }
-                }
-                
-                // Блок 3x3
-                const blockRow = Math.floor(row / 3) * 3;
-                const blockCol = Math.floor(col / 3) * 3;
-                
-                for (let i = 0; i < 3; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        const cell = document.querySelector(`[data-row="${blockRow + i}"][data-col="${blockCol + j}"]`);
-                        if (cell && !cell.classList.contains('selected')) {
-                            cell.classList.add('highlighted');
-                        }
-                    }
-                }
-                
-                // Подсвечиваем клетки с такими же числами
-                const currentValue = this.board[row][col];
-                if (currentValue !== 0) {
-                    document.querySelectorAll('.sudoku-cell').forEach(cell => {
-                        if (parseInt(cell.textContent) === currentValue && !cell.classList.contains('selected')) {
-                            cell.classList.add('highlighted');
-                        }
-                    });
-                }
-            }
-            
-            // Ввод чисел
-            inputNumber(num) {
-                if (!this.selectedCell) return;
-                
-                const [row, col] = this.selectedCell;
-                if (this.original[row][col] !== 0) return;
-                
-                // Сохраняем в историю для отмены
-                this.history.push({
-                    row, col,
-                    oldValue: this.board[row][col],
-                    newValue: num
-                });
-                
-                // Устанавливаем значение
-                this.board[row][col] = num;
-                
-                // Проверяем правильность
-                const isCorrect = num === this.solution[row][col];
-                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                
-                cell.textContent = num === 0 ? '' : num;
-                cell.classList.remove('error');
-                
-                if (num !== 0) {
-                    cell.classList.add('user-input');
-                    if (!isCorrect) {
-                        cell.classList.add('error');
-                        this.errors++;
-                        this.updateStats();
-                    }
-                } else {
-                    cell.classList.remove('user-input');
-                }
-                
-                // Обновляем подсветку
-                this.highlightRelatedCells(row, col);
-                
-                // Проверяем завершение игры
-                if (this.isComplete() && this.isCorrect()) {
-                    this.showWinModal();
-                }
-            }
-            
-            clearCell() {
-                if (!this.selectedCell) return;
-                this.inputNumber(0);
-            }
-            
-            undo() {
-                if (this.history.length === 0) return;
-                
-                const lastMove = this.history.pop();
-                const { row, col, oldValue } = lastMove;
-                
-                this.board[row][col] = oldValue;
-                
-                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                cell.textContent = oldValue === 0 ? '' : oldValue;
-                cell.classList.remove('error');
-                
-                if (oldValue !== 0) {
-                    cell.classList.add('user-input');
-                } else {
-                    cell.classList.remove('user-input');
-                }
-                
-                // Если была ошибка, уменьшаем счетчик
-                if (lastMove.newValue !== this.solution[row][col] && oldValue === this.solution[row][col]) {
-                    this.errors = Math.max(0, this.errors - 1);
-                    this.updateStats();
-                }
-                
-                this.highlightRelatedCells(row, col);
-            }
-            
-            giveHint() {
-                if (this.hints <= 0 || !this.selectedCell) return;
-                
-                const [row, col] = this.selectedCell;
-                if (this.board[row][col] !== 0) return;
-                
-                const correctValue = this.solution[row][col];
-                this.inputNumber(correctValue);
-                
-                this.hints--;
-                this.updateStats();
-                
-                // Анимация подсказки
-                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                cell.classList.add('pulse');
-                setTimeout(() => cell.classList.remove('pulse'), 300);
-            }
-            
-            // Проверка решения
-            checkSolution() {
-                let hasErrors = false;
-                
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                        const value = this.board[row][col];
-                        
-                        if (value !== 0 && value !== this.solution[row][col]) {
-                            cell.classList.add('error');
-                            hasErrors = true;
-                        } else {
-                            cell.classList.remove('error');
-                        }
-                    }
-                }
-                
-                if (!hasErrors && this.isComplete()) {
-                    this.showWinModal();
-                } else if (!hasErrors) {
-                    alert('Все заполненные клетки верны! Продолжайте.');
-                } else {
-                    alert('Есть ошибки. Проверьте выделенные красным клетки.');
-                }
-            }
-            
-            solvePuzzle() {
-                if (!confirm('Вы уверены? Это завершит игру.')) return;
-                
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        this.board[row][col] = this.solution[row][col];
-                    }
-                }
-                
-                this.renderGrid();
-                this.showWinModal();
-            }
-            
-            isComplete() {
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        if (this.board[row][col] === 0) return false;
-                    }
-                }
-                return true;
-            }
-            
-            isCorrect() {
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        if (this.board[row][col] !== this.solution[row][col]) return false;
-                    }
-                }
-                return true;
-            }
-            
-            // Обновление статистики
-            updateStats() {
-                document.getElementById('error-count').textContent = this.errors;
-                document.getElementById('hint-count').textContent = this.hints;
-                document.getElementById('difficulty-display').textContent = 
-                    this.getDifficultyName(this.difficulty);
-            }
-            
-            getDifficultyName(diff) {
-                const names = {
-                    easy: 'Легкая',
-                    medium: 'Средняя',
-                    hard: 'Сложная',
-                    expert: 'Эксперт'
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.frequency.value = frequency;
+                    oscillator.type = type;
+                    
+                    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+                    
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + duration);
                 };
-                return names[diff] || 'Средняя';
             }
             
-            // Модальное окно победы
-            showWinModal() {
-                document.getElementById('win-errors').textContent = this.errors;
-                document.getElementById('win-modal').style.display = 'flex';
+            createExplosionSound() {
+                return () => {
+                    if (!this.audioContext || !soundEnabled) return;
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const oscillator = this.audioContext.createOscillator();
+                        const gainNode = this.audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(this.audioContext.destination);
+                        
+                        oscillator.frequency.value = 100 + Math.random() * 200;
+                        oscillator.type = 'sawtooth';
+                        
+                        const startTime = this.audioContext.currentTime + i * 0.05;
+                        gainNode.gain.setValueAtTime(0.2, startTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.3);
+                        
+                        oscillator.start(startTime);
+                        oscillator.stop(startTime + 0.3);
+                    }
+                };
             }
             
-            // Обработчики событий
-            setupEventListeners() {
-                // Кнопки цифр
-                document.querySelectorAll('.number-btn[data-number]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const num = parseInt(btn.dataset.number);
-                        this.inputNumber(num);
+            createBonusSound() {
+                return () => {
+                    if (!this.audioContext || !soundEnabled) return;
+                    
+                    const frequencies = [523.25, 659.25, 783.99]; // C5, E5, G5
+                    
+                    frequencies.forEach((freq, i) => {
+                        const oscillator = this.audioContext.createOscillator();
+                        const gainNode = this.audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(this.audioContext.destination);
+                        
+                        oscillator.frequency.value = freq;
+                        oscillator.type = 'sine';
+                        
+                        const startTime = this.audioContext.currentTime + i * 0.1;
+                        gainNode.gain.setValueAtTime(0.15, startTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+                        
+                        oscillator.start(startTime);
+                        oscillator.stop(startTime + 0.2);
                     });
-                });
-                
-                // Специальные кнопки
-                document.getElementById('clear-btn').addEventListener('click', () => this.clearCell());
-                document.getElementById('undo-btn').addEventListener('click', () => this.undo());
-                document.getElementById('hint-btn').addEventListener('click', () => this.giveHint());
-                
-                // Кнопки действий
-                document.getElementById('new-game-btn').addEventListener('click', () => {
-                    this.generateNewGame();
-                    this.renderGrid();
-                });
-                
-                document.getElementById('check-btn').addEventListener('click', () => this.checkSolution());
-                document.getElementById('solve-btn').addEventListener('click', () => this.solvePuzzle());
-                
-                // Выбор сложности
-                document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        this.difficulty = btn.dataset.difficulty;
-                        this.generateNewGame();
-                        this.renderGrid();
+                };
+            }
+            
+            createWaveSound() {
+                return () => {
+                    if (!this.audioContext || !soundEnabled) return;
+                    
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(200, this.audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(800, this.audioContext.currentTime + 0.5);
+                    oscillator.type = 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
+                    
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + 0.5);
+                };
+            }
+            
+            createGameOverSound() {
+                return () => {
+                    if (!this.audioContext || !soundEnabled) return;
+                    
+                    const frequencies = [392, 349.23, 329.63, 293.66]; // G4, F4, E4, D4
+                    
+                    frequencies.forEach((freq, i) => {
+                        const oscillator = this.audioContext.createOscillator();
+                        const gainNode = this.audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(this.audioContext.destination);
+                        
+                        oscillator.frequency.value = freq;
+                        oscillator.type = 'sine';
+                        
+                        const startTime = this.audioContext.currentTime + i * 0.3;
+                        gainNode.gain.setValueAtTime(0.2, startTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.5);
+                        
+                        oscillator.start(startTime);
+                        oscillator.stop(startTime + 0.5);
                     });
-                });
-                
-                // Модальное окно
-                document.getElementById('play-again-btn').addEventListener('click', () => {
-                    document.getElementById('win-modal').style.display = 'none';
-                    this.generateNewGame();
-                    this.renderGrid();
-                });
-                
-                // Управление с клавиатуры
-                document.addEventListener('keydown', (e) => {
-                    if (e.key >= '1' && e.key <= '9') {
-                        this.inputNumber(parseInt(e.key));
-                    } else if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') {
-                        this.clearCell();
-                    } else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
-                        this.undo();
-                    } else if (e.key === 'ArrowUp' && this.selectedCell) {
-                        const [row, col] = this.selectedCell;
-                        if (row > 0) this.selectCell(row - 1, col);
-                    } else if (e.key === 'ArrowDown' && this.selectedCell) {
-                        const [row, col] = this.selectedCell;
-                        if (row < 8) this.selectCell(row + 1, col);
-                    } else if (e.key === 'ArrowLeft' && this.selectedCell) {
-                        const [row, col] = this.selectedCell;
-                        if (col > 0) this.selectCell(row, col - 1);
-                    } else if (e.key === 'ArrowRight' && this.selectedCell) {
-                        const [row, col] = this.selectedCell;
-                        if (col < 8) this.selectCell(row, col + 1);
-                    }
-                });
-                
-                // Свайпы для мобильных устройств
-                let touchStartX = 0;
-                let touchStartY = 0;
-                
-                document.addEventListener('touchstart', (e) => {
-                    touchStartX = e.touches[0].clientX;
-                    touchStartY = e.touches[0].clientY;
-                }, { passive: true });
-                
-                document.addEventListener('touchend', (e) => {
-                    if (!this.selectedCell) return;
+                };
+            }
+            
+            createMusic() {
+                // Простая фоновая музыка
+                this.music = () => {
+                    if (!this.audioContext || !soundEnabled || this.musicPlaying) return;
                     
-                    const touchEndX = e.changedTouches[0].clientX;
-                    const touchEndY = e.changedTouches[0].clientY;
+                    this.musicPlaying = true;
+                    const sequence = [
+                        { note: 523.25, duration: 0.5 }, // C5
+                        { note: 587.33, duration: 0.5 }, // D5
+                        { note: 659.25, duration: 0.5 }, // E5
+                        { note: 698.46, duration: 0.5 }, // F5
+                        { note: 783.99, duration: 0.5 }, // G5
+                        { note: 880.00, duration: 0.5 }, // A5
+                        { note: 987.77, duration: 0.5 }, // B5
+                        { note: 1046.50, duration: 1.0 }  // C6
+                    ];
                     
-                    const dx = touchEndX - touchStartX;
-                    const dy = touchEndY - touchStartY;
-                    const [row, col] = this.selectedCell;
+                    let time = this.audioContext.currentTime;
                     
-                    // Определяем направление свайпа
-                    if (Math.abs(dx) > Math.abs(dy)) {
-                        // Горизонтальный свайп
-                        if (dx > 30 && col < 8) {
-                            this.selectCell(row, col + 1);
-                        } else if (dx < -30 && col > 0) {
-                            this.selectCell(row, col - 1);
+                    sequence.forEach((step, index) => {
+                        const oscillator = this.audioContext.createOscillator();
+                        const gainNode = this.audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(this.audioContext.destination);
+                        
+                        oscillator.frequency.value = step.note;
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(0.05, time);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, time + step.duration);
+                        
+                        oscillator.start(time);
+                        oscillator.stop(time + step.duration);
+                        
+                        time += step.duration;
+                    });
+                    
+                    // Повторяем музыку через 4 секунды
+                    setTimeout(() => {
+                        this.musicPlaying = false;
+                        if (soundEnabled) {
+                            this.music();
                         }
-                    } else {
-                        // Вертикальный свайп
-                        if (dy > 30 && row < 8) {
-                            this.selectCell(row + 1, col);
-                        } else if (dy < -30 && row > 0) {
-                            this.selectCell(row - 1, col);
-                        }
-                    }
-                }, { passive: true });
-                
-                // Двойное нажатие для очистки
-                let lastTap = 0;
-                document.addEventListener('touchend', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapLength = currentTime - lastTap;
-                    
-                    if (tapLength < 500 && tapLength > 0) {
-                        // Двойное нажатие
-                        this.clearCell();
-                    }
-                    
-                    lastTap = currentTime;
-                }, { passive: true });
-                
-                // Предотвращение масштабирования при двойном нажатии
-                document.addEventListener('touchmove', (e) => {
-                    if (e.scale !== 1) {
-                        e.preventDefault();
-                    }
-                }, { passive: false });
+                    }, 4000);
+                };
+            }
+            
+            play(soundName) {
+                if (this.sounds[soundName]) {
+                    this.sounds[soundName]();
+                }
+            }
+            
+            startMusic() {
+                if (this.music) {
+                    this.music();
+                }
+            }
+            
+            stopMusic() {
+                this.musicPlaying = false;
             }
         }
         
-        // Инициализация игры при загрузке страницы
-        document.addEventListener('DOMContentLoaded', () => {
-            window.sudokuGame = new SudokuGame();
+        // ======================= КЛАССЫ ИГРЫ =======================
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.size = Math.random() * 4 + 2;
+                this.speedX = Math.random() * 6 - 3;
+                this.speedY = Math.random() * 6 - 3;
+                this.life = 1.0;
+                this.decay = 0.02;
+            }
             
-            // Добавляем вибрацию для мобильных устройств (если поддерживается)
-            if ('vibrate' in navigator) {
-                document.querySelectorAll('.number-btn, .action-btn').forEach(btn => {
-                    btn.addEventListener('touchstart', () => {
-                        navigator.vibrate(10);
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.life -= this.decay;
+                return this.life <= 0;
+            }
+            
+            draw() {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+        }
+        
+        class Bullet {
+            constructor(x, y, speedX, speedY, color, isPlayer = true) {
+                this.x = x;
+                this.y = y;
+                this.speedX = speedX;
+                this.speedY = speedY;
+                this.color = color;
+                this.width = isPlayer ? 4 : 3;
+                this.height = isPlayer ? 12 : 8;
+                this.active = true;
+                this.isPlayer = isPlayer;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.y < -20 || this.y > CANVAS_HEIGHT + 20 ||
+                    this.x < -20 || this.x > CANVAS_WIDTH + 20) {
+                    this.active = false;
+                }
+            }
+            
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                
+                // Эффект свечения для пуль игрока
+                if (this.isPlayer) {
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = this.color;
+                    ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+        
+        class Enemy {
+            constructor(x, y, type = 'normal') {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.width = type === 'strong' ? 65 : 55;
+                this.height = type === 'strong' ? 60 : 40;
+                this.speed = type === 'strong' ? 0.8 : 1.5;
+                this.color = type === 'strong' ? COLORS.PURPLE : COLORS.RED;
+                this.health = type === 'strong' ? 3 : 1;
+                this.lastShotTime = 0;
+                this.angle = 0;
+                this.pulse = 0;
+            }
+            
+            takeDamage() {
+                this.health--;
+                return this.health <= 0;
+            }
+            
+            update() {
+                this.y += this.speed;
+                this.angle += 0.05;
+                this.pulse = Math.sin(this.angle) * 0.1 + 1;
+                
+                return this.y > CANVAS_HEIGHT + 50;
+            }
+            
+            shoot() {
+                // Добавляем ограничение скорости стрельбы для врагов
+                const now = Date.now();
+                if (now - this.lastShotTime < 2800) { // 1 выстрел в секунду для врагов
+                    return null;
+                }
+                
+                this.lastShotTime = now;
+                
+                if (game.audio) {
+                    game.audio.play('enemyShoot');
+                }
+                
+                return new Bullet(
+                    this.x,
+                    this.y + this.height/2,
+                    0,
+                    4,
+                    this.type === 'strong' ? COLORS.ORANGE : COLORS.YELLOW,
+                    false
+                );
+            }
+
+            
+            draw() {
+                // УДАЛИТЕ весь старый код метода draw() и ВСТАВЬТЕ этот:
+                
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.scale(this.pulse, this.pulse);
+                
+                if (this.type === 'strong' && images.enemyStrong) {
+                    // Рисуем спрайт сильного врага
+                    ctx.drawImage(
+                        images.enemyStrong,
+                        -this.width/2,
+                        -this.height/2,
+                        this.width,
+                        this.height
+                    );
+                } else if (this.type === 'normal' && images.enemyNormal) {
+                    // Рисуем спрайт обычного врага
+                    ctx.drawImage(
+                        images.enemyNormal,
+                        -this.width/2,
+                        -this.height/2,
+                        this.width,
+                        this.height
+                    );
+                } else {
+                    // Фолбэк на старую отрисовку
+                    // Основной корпус
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                    
+                    // Детали
+                    ctx.fillStyle = this.type === 'strong' ? COLORS.ORANGE : COLORS.YELLOW;
+                    ctx.fillRect(-this.width/4, -this.height/4, this.width/2, this.height/2);
+                    
+                    // Окантовка
+                    ctx.strokeStyle = COLORS.WHITE;
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+                    
+                    // Для сильных врагов - дополнительные детали
+                    if (this.type === 'strong') {
+                        ctx.fillStyle = COLORS.RED;
+                        ctx.fillRect(-10, -15, 20, 10);
+                        ctx.fillRect(-10, 5, 20, 10);
+                    }
+                }
+                
+                ctx.restore();
+                
+                // Индикатор здоровья для сильных врагов (оставляем)
+                if (this.type === 'strong' && this.health < 3) {
+                    ctx.fillStyle = COLORS.RED;
+                    ctx.fillRect(this.x - 20, this.y - 30, 40 * (this.health / 3), 5);
+                    ctx.strokeStyle = COLORS.WHITE;
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(this.x - 20, this.y - 30, 40, 5);
+                }
+            }
+        }
+        
+        class Player {
+            constructor(game) {
+                this.game = game;
+                this.x = CANVAS_WIDTH / 2;
+                this.y = CANVAS_HEIGHT - 80;
+                this.width = 60;
+                this.height = 40;
+                this.speed = 5;
+                this.lives = 3;
+                this.score = 0;
+                this.hitCounter = 0;
+                this.shootTimer = 0;
+                this.shootInterval = 10;
+                this.tripleShotActive = false;
+                this.tripleShotTimer = 0;
+                this.octaShotActive = false;
+                this.octaShotTimer = 0;
+                this.isTouching = false;
+                this.touchX = 0;
+                this.touchY = 0;
+                this.enginePulse = 0;
+                this.lastShotTime = 0; 
+            }
+            
+            takeDamage() {
+                this.lives--;
+                return this.lives <= 0;
+            }
+            
+            update() {
+                                
+                    // Ограничение в пределах экрана
+                    this.x = Math.max(this.width/2, Math.min(CANVAS_WIDTH - this.width/2, this.x));
+                    this.y = Math.max(this.height/2, Math.min(CANVAS_HEIGHT - this.height/2, this.y));
+                    
+                    // Стрельба при касании
+                    this.shootTimer++;
+                    if (this.shootTimer >= this.shootInterval) {
+                        this.shoot();
+                        this.shootTimer = 0;
+                    }
+                
+                // Обновление таймеров бонусов
+                if (this.tripleShotActive) {
+                    this.tripleShotTimer--;
+                    if (this.tripleShotTimer <= 0) {
+                        this.tripleShotActive = false;
+                    }
+                }
+                
+                if (this.octaShotActive) {
+                    this.octaShotTimer--;
+                    if (this.octaShotTimer <= 0) {
+                        this.octaShotActive = false;
+                    }
+                }
+                
+                // Анимация двигателей
+                this.enginePulse += 0.2;
+            }
+            
+            shoot() {
+                // Проверяем задержку между выстрелами (300ms = ~3 выстрела в секунду)
+                const now = Date.now();
+                if (now - this.lastShotTime < 300) {
+                    return;
+                }
+                
+                this.lastShotTime = now;
+                
+                if (game.audio) {
+                    game.audio.play('shoot');
+                }
+                
+                if (this.octaShotActive) {
+                    // Восьмизарядный выстрел
+                    const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+                    angles.forEach(angle => {
+                        const rad = angle * Math.PI / 180;
+                        this.game.bullets.push(new Bullet(
+                            this.x,
+                            this.y - this.height/2,
+                            Math.sin(rad) * 8,
+                            -8,
+                            COLORS.GREEN,
+                            true
+                        ));
                     });
+                } else if (this.tripleShotActive) {
+                    // Тройной выстрел
+                    this.game.bullets.push(new Bullet(this.x - 10, this.y - this.height/2, 0, -8, COLORS.BLUE, true));
+                    this.game.bullets.push(new Bullet(this.x, this.y - this.height/2, 0, -8, COLORS.BLUE, true));
+                    this.game.bullets.push(new Bullet(this.x + 10, this.y - this.height/2, 0, -8, COLORS.BLUE, true));
+                } else {
+                    // Обычный выстрел
+                    this.game.bullets.push(new Bullet(this.x, this.y - this.height/2, 0, -8, COLORS.BLUE, true));
+                }
+            }
+            
+            draw() {
+                // УДАЛИТЕ весь старый код метода draw() и ВСТАВЬТЕ этот:
+                
+                if (images.player) {
+                    // Рисуем спрайт игрока
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // Если нужно, можно добавить поворот или другие трансформации
+                    // ctx.rotate(angle);
+                    
+                    // Рисуем спрайт по центру
+                    ctx.drawImage(
+                        images.player,
+                        -this.width/2,
+                        -this.height/2,
+                        this.width,
+                        this.height
+                    );
+                    
+                    // Эффект двигателей (оставляем или замените на спрайт)
+                    if (this.isTouching) {
+                        const engineSize = 15 + Math.sin(this.enginePulse) * 5;
+                        ctx.fillStyle = COLORS.ORANGE;
+                        ctx.fillRect(-8, this.height/2 - 5, 16, engineSize);
+                    }
+                    
+                    ctx.restore();
+                } else {
+                    // Фолбэк на старую отрисовку, если изображение не загружено
+                    // Двигатели
+                    const engineSize = 15 + Math.sin(this.enginePulse) * 5;
+                    ctx.fillStyle = COLORS.ORANGE;
+                    ctx.fillRect(this.x - 8, this.y + this.height/2 - 5, 16, engineSize);
+                    ctx.fillStyle = COLORS.YELLOW;
+                    ctx.fillRect(this.x - 6, this.y + this.height/2 - 3, 12, engineSize - 4);
+                    
+                    // Основной корпус
+                    ctx.fillStyle = COLORS.BLUE;
+                    ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                    
+                    // Кабина
+                    ctx.fillStyle = '#a0e0ff';
+                    ctx.fillRect(this.x - 10, this.y - 20, 20, 15);
+                    
+                    // Крылья
+                    ctx.fillStyle = COLORS.BLUE;
+                    ctx.fillRect(this.x - 30, this.y - 5, 20, 10);
+                    ctx.fillRect(this.x + 10, this.y - 5, 20, 10);
+                    
+                    // Окантовка
+                    ctx.strokeStyle = COLORS.WHITE;
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                }
+                
+                // Индикатор касания (оставляем)
+                if (this.isTouching) {
+                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.5)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.width/2 + 5, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        class Game {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.canvas.width = CANVAS_WIDTH;
+                this.canvas.height = CANVAS_HEIGHT;
+                ctx = this.canvas.getContext('2d');
+                
+                this.player = new Player(this);
+                this.enemies = [];
+                this.bullets = [];
+                this.enemyBullets = [];
+                this.particles = [];
+                this.stars = [];
+                
+                this.wave = 1;
+                this.enemiesPerWave = 6;
+                this.enemiesSpawned = 0;
+                this.spawnTimer = 0;
+                
+                this.gameOver = false;
+                this.paused = false;
+                this.lastTime = 0;
+                this.frameCount = 0;
+                
+                this.audio = new AudioSystem();
+                
+                this.initStars();
+                this.setupEventListeners();
+                this.gameLoop(0);
+                
+            }
+            
+            initStars() {
+                for (let i = 0; i < 100; i++) {
+                    this.stars.push({
+                        x: Math.random() * CANVAS_WIDTH,
+                        y: Math.random() * CANVAS_HEIGHT,
+                        size: Math.random() * 2 + 0.5,
+                        speed: Math.random() * 0.5 + 0.2,
+                        brightness: Math.random() * 0.5 + 0.5
+                    });
+                }
+            }
+            
+            setupEventListeners() {
+                const canvas = this.canvas;
+                const touchIndicator = document.getElementById('touchIndicator');
+                
+                // Сенсорные события
+                canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    this.player.isTouching = true;
+                    this.player.touchX = (touch.clientX - rect.left) * scaleX;
+                    this.player.touchY = (touch.clientY - rect.top) * scaleY;
+                    
+                    // Показываем индикатор касания
+                    touchIndicator.style.left = (touch.clientX - 20) + 'px';
+                    touchIndicator.style.top = (touch.clientY - 20) + 'px';
+                    touchIndicator.classList.add('active');
+                });
+                
+                canvas.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    // Непосредственно двигаем корабль к точке касания
+                    const targetX = (touch.clientX - rect.left) * scaleX;
+                    const targetY = (touch.clientY - rect.top) * scaleY;
+                    
+                    // Плавное движение к цели
+                    this.player.x += (targetX - this.player.x) * 0.2;
+                    this.player.y += (targetY - this.player.y) * 0.2;
+                    
+                    // Обновляем позицию индикатора
+                    touchIndicator.style.left = (touch.clientX - 20) + 'px';
+                    touchIndicator.style.top = (touch.clientY - 20) + 'px';
+                });
+                
+                canvas.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.player.isTouching = false;
+                    touchIndicator.classList.remove('active');
+                });
+                
+                // События мыши
+                canvas.addEventListener('mousedown', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    this.player.isTouching = true;
+                    this.player.touchX = (e.clientX - rect.left) * scaleX;
+                    this.player.touchY = (e.clientY - rect.top) * scaleY;
+                    
+                    // Показываем индикатор касания
+                    touchIndicator.style.left = (e.clientX - 20) + 'px';
+                    touchIndicator.style.top = (e.clientY - 20) + 'px';
+                    touchIndicator.classList.add('active');
+                });
+                
+                canvas.addEventListener('mousemove', (e) => {
+                    if (this.player.isTouching) {
+                        const rect = canvas.getBoundingClientRect();
+                        const scaleX = canvas.width / rect.width;
+                        const scaleY = canvas.height / rect.height;
+                        
+                        // Непосредственно двигаем корабль к точке мыши
+                        const targetX = (e.clientX - rect.left) * scaleX;
+                        const targetY = (e.clientY - rect.top) * scaleY;
+                        
+                        // Плавное движение к цели
+                        this.player.x += (targetX - this.player.x) * 0.2;
+                        this.player.y += (targetY - this.player.y) * 0.2;
+                        
+                        // Обновляем позицию индикатора
+                        touchIndicator.style.left = (e.clientX - 20) + 'px';
+                        touchIndicator.style.top = (e.clientY - 20) + 'px';
+                    }
+                });
+                
+                canvas.addEventListener('mouseup', (e) => {
+                    this.player.isTouching = false;
+                    touchIndicator.classList.remove('active');
+                });
+                
+                canvas.addEventListener('mouseleave', (e) => {
+                    this.player.isTouching = false;
+                    touchIndicator.classList.remove('active');
+                });
+                
+                // Пауза по ESC
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.paused = !this.paused;
+                        if (!this.paused) {
+                            this.gameLoop(0);
+                        }
+                    }
+                });
+                
+                // Пауза при касании вне игры
+                document.addEventListener('click', (e) => {
+                    if (!canvas.contains(e.target) && e.target !== canvas) {
+                        this.paused = !this.paused;
+                        if (!this.paused) {
+                            this.gameLoop(0);
+                        }
+                    }
                 });
             }
             
-            // Предотвращаем контекстное меню на мобильных устройствах
-            document.addEventListener('contextmenu', (e) => {
-                if (e.target.classList.contains('sudoku-cell')) {
-                    e.preventDefault();
-                }
-            });
+            spawnEnemy() {
+                const x = Math.random() * (CANVAS_WIDTH - 60) + 30;
+                const type = Math.random() < 0.3 ? 'strong' : 'normal';
+                this.enemies.push(new Enemy(x, -50, type));
+                this.enemiesSpawned++;
+            }
             
-            // Адаптация для различных устройств
-            const adjustForDevice = () => {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                const isTablet = /iPad|Android(?!.*Mobile)|Tablet/i.test(navigator.userAgent);
+            update() {
+                if (this.gameOver || this.paused) return;
                 
-                if (isMobile) {
-                    document.body.style.fontSize = '14px';
+                // Обновление звездного фона
+                this.stars.forEach(star => {
+                    star.y += star.speed;
+                    if (star.y > CANVAS_HEIGHT) {
+                        star.y = 0;
+                        star.x = Math.random() * CANVAS_WIDTH;
+                    }
+                });
+                
+                // Обновление игрока
+                this.player.update();
+                
+                // Спавн врагов
+                this.spawnTimer++;
+                if (this.enemiesSpawned < this.wave * this.enemiesPerWave && 
+                    this.spawnTimer > 60 && 
+                    this.enemies.length < 10) {
+                    this.spawnEnemy();
+                    this.spawnTimer = 0;
                 }
                 
-                if (isTablet) {
-                    document.querySelector('.container').style.maxWidth = '600px';
-                }
-            };
-            
-            adjustForDevice();
-            window.addEventListener('resize', adjustForDevice);
-            
-            // Сохранение прогресса в localStorage
-            const saveProgress = () => {
-                if (window.sudokuGame) {
-                    const progress = {
-                        board: window.sudokuGame.board,
-                        original: window.sudokuGame.original,
-                        solution: window.sudokuGame.solution,
-                        errors: window.sudokuGame.errors,
-                        hints: window.sudokuGame.hints,
-                        difficulty: window.sudokuGame.difficulty,
-                        timestamp: Date.now()
-                    };
-                    localStorage.setItem('sudokuProgress', JSON.stringify(progress));
-                }
-            };
-            
-            const loadProgress = () => {
-                try {
-                    const saved = localStorage.getItem('sudokuProgress');
-                    if (saved) {
-                        const progress = JSON.parse(saved);
-                        // Проверяем, не устарели ли сохранения (старше 1 дня)
-                        if (Date.now() - progress.timestamp < 24 * 60 * 60 * 1000) {
-                            window.sudokuGame.board = progress.board;
-                            window.sudokuGame.original = progress.original;
-                            window.sudokuGame.solution = progress.solution;
-                            window.sudokuGame.errors = progress.errors;
-                            window.sudokuGame.hints = progress.hints;
-                            window.sudokuGame.difficulty = progress.difficulty;
-                            window.sudokuGame.renderGrid();
-                            window.sudokuGame.updateStats();
+                // Обновление врагов
+                for (let i = this.enemies.length - 1; i >= 0; i--) {
+                    const enemy = this.enemies[i];
+                    
+                    if (enemy.update()) {
+                        this.enemies.splice(i, 1);
+                        continue;
+                    }
+                    
+                    // Стрельба врагов
+                    const bullet = enemy.shoot();
+                    if (bullet) {
+                        this.enemyBullets.push(bullet);
+                    }
+                    
+                    // Проверка столкновения с пулями игрока
+                    for (let j = this.bullets.length - 1; j >= 0; j--) {
+                        const bullet = this.bullets[j];
+                        
+                        if (bullet.x > enemy.x - enemy.width/2 && 
+                            bullet.x < enemy.x + enemy.width/2 &&
+                            bullet.y > enemy.y - enemy.height/2 && 
+                            bullet.y < enemy.y + enemy.height/2) {
                             
-                            // Устанавливаем активную кнопку сложности
-                            document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                                btn.classList.remove('active');
-                                if (btn.dataset.difficulty === progress.difficulty) {
-                                    btn.classList.add('active');
+                            if (enemy.takeDamage()) {
+                                // Уничтожение врага
+                                this.player.score += enemy.type === 'strong' ? 50 : 20;
+                                this.player.hitCounter++;
+                                
+                                if (this.audio) {
+                                    this.audio.play('explosion');
                                 }
-                            });
+                                
+                                // Создание частиц взрыва
+                                for (let k = 0; k < 20; k++) {
+                                    this.particles.push(new Particle(
+                                        enemy.x,
+                                        enemy.y,
+                                        enemy.type === 'strong' ? COLORS.PURPLE : COLORS.RED
+                                    ));
+                                }
+                                
+                                this.enemies.splice(i, 1);
+                                
+                                // Проверка бонусов
+                                if (this.player.hitCounter === 5) {
+                                    this.player.tripleShotActive = true;
+                                    this.player.tripleShotTimer = 180; // 3 секунды при 60 FPS
+                                    
+                                    if (this.audio) {
+                                        this.audio.play('bonus');
+                                    }
+                                }
+                                
+                                if (this.player.hitCounter === 10) {
+                                    this.player.octaShotActive = true;
+                                    this.player.octaShotTimer = 300; // 5 секунд при 60 FPS
+                                    
+                                    if (this.audio) {
+                                        this.audio.play('bonus');
+                                    }
+                                }
+                            } else {
+                                if (this.audio) {
+                                    this.audio.play('hit');
+                                }
+                            }
+                            
+                            this.bullets.splice(j, 1);
+                            break;
                         }
                     }
-                } catch (e) {
-                    console.log('Не удалось загрузить сохраненную игру');
+                    
+                    // Проверка столкновения с игроком
+                    if (this.player.x > enemy.x - enemy.width/2 && 
+                        this.player.x < enemy.x + enemy.width/2 &&
+                        this.player.y > enemy.y - enemy.height/2 && 
+                        this.player.y < enemy.y + enemy.height/2) {
+                        
+                        if (this.player.takeDamage()) {
+                            this.gameOver = true;
+                            this.showGameOver();
+                            return;
+                        }
+                        
+                        if (this.audio) {
+                            this.audio.play('explosion');
+                        }
+                        
+                        // Создание частиц взрыва
+                        for (let k = 0; k < 15; k++) {
+                            this.particles.push(new Particle(
+                                enemy.x,
+                                enemy.y,
+                                enemy.type === 'strong' ? COLORS.PURPLE : COLORS.RED
+                            ));
+                        }
+                        
+                        this.enemies.splice(i, 1);
+                    }
                 }
-            };
+                
+                // Обновление пуль игрока
+                for (let i = this.bullets.length - 1; i >= 0; i--) {
+                    this.bullets[i].update();
+                    if (!this.bullets[i].active) {
+                        this.bullets.splice(i, 1);
+                    }
+                }
+                
+                // Обновление пуль врагов
+                for (let i = this.enemyBullets.length - 1; i >= 0; i--) {
+                    const bullet = this.enemyBullets[i];
+                    bullet.update();
+                    
+                    if (!bullet.active) {
+                        this.enemyBullets.splice(i, 1);
+                        continue;
+                    }
+                    
+                    // Проверка столкновения с игроком
+                    if (bullet.x > this.player.x - this.player.width/2 && 
+                        bullet.x < this.player.x + this.player.width/2 &&
+                        bullet.y > this.player.y - this.player.height/2 && 
+                        bullet.y < this.player.y + this.player.height/2) {
+                        
+                        if (this.player.takeDamage()) {
+                            this.gameOver = true;
+                            this.showGameOver();
+                            return;
+                        }
+                        
+                        if (this.audio) {
+                            this.audio.play('hit');
+                        }
+                        
+                        this.enemyBullets.splice(i, 1);
+                        
+                        // Создание частиц взрыва
+                        for (let k = 0; k < 10; k++) {
+                            this.particles.push(new Particle(
+                                bullet.x,
+                                bullet.y,
+                                COLORS.YELLOW
+                            ));
+                        }
+                    }
+                }
+                
+                // Обновление частиц
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    if (this.particles[i].update()) {
+                        this.particles.splice(i, 1);
+                    }
+                }
+                
+                // Проверка завершения волны
+                if (this.enemiesSpawned >= this.wave * this.enemiesPerWave && 
+                    this.enemies.length === 0) {
+                    this.wave++;
+                    this.enemiesSpawned = 0;
+                    
+                    if (this.audio) {
+                        this.audio.play('wave');
+                    }
+                    
+                    // Создание волнового эффекта (ПРОЗРАЧНЫЙ!)
+                    this.createWaveEffect();
+                }
+                
+                // Обновление UI
+                this.updateUI();
+            }
             
-            // Автосохранение каждые 30 секунд
-            setInterval(saveProgress, 30000);
+            createWaveEffect() {
+                // Создаем прозрачный волновой эффект вместо непрозрачного
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        // Создаем прозрачный круг
+                        ctx.save();
+                        ctx.globalAlpha = 0.3; // Прозрачность 30%
+                        ctx.strokeStyle = COLORS.BLUE;
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.arc(
+                            CANVAS_WIDTH / 2,
+                            CANVAS_HEIGHT / 2,
+                            100 + i * 50,
+                            0,
+                            Math.PI * 2
+                        );
+                        ctx.stroke();
+                        ctx.restore();
+                    }, i * 100);
+                }
+            }
             
-            // Загрузка при старте
-            loadProgress();
+            updateUI() {
+                document.getElementById('score').textContent = this.player.score;
+                document.getElementById('wave').textContent = this.wave;
+                document.getElementById('lives').textContent = this.player.lives;
+                document.getElementById('hits').textContent = this.player.hitCounter;
+                
+                // Обновление бонусов
+                const bonusesDiv = document.getElementById('bonuses');
+                let bonusHTML = '';
+                
+                if (this.player.octaShotActive) {
+                    bonusHTML += '<div class="bonus-item">🎯 ВОСЬМИЗАРЯДНЫЙ ВЫСТРЕЛ: ' + 
+                        Math.ceil(this.player.octaShotTimer / 60) + 'с</div>';
+                }
+                
+                if (this.player.tripleShotActive) {
+                    bonusHTML += '<div class="bonus-item">⚡ ТРОЙНОЙ ВЫСТРЕЛ: ' + 
+                        Math.ceil(this.player.tripleShotTimer / 60) + 'с</div>';
+                }
+                
+                if (!bonusHTML) {
+                    bonusHTML = '<div class="bonus-item">🚫 Нет активных бонусов</div>';
+                }
+                
+                bonusesDiv.innerHTML = bonusHTML;
+            }
             
-            // Сохранение при закрытии страницы
-            window.addEventListener('beforeunload', saveProgress);
+            draw() {
+                // Очистка с прозрачным фоном для звезд
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                
+                // Рисование звезд
+                this.stars.forEach(star => {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
+                    ctx.fillRect(star.x, star.y, star.size, star.size);
+                });
+                
+                // Рисование частиц
+                this.particles.forEach(particle => particle.draw());
+                
+                // Рисование врагов
+                this.enemies.forEach(enemy => enemy.draw());
+                
+                // Рисование пуль врагов
+                this.enemyBullets.forEach(bullet => bullet.draw());
+                
+                // Рисование пуль игрока
+                this.bullets.forEach(bullet => bullet.draw());
+                
+                // Рисование игрока
+                this.player.draw();
+                
+                // Рисование UI поверх всего
+                this.drawUI();
+            }
             
-            // Обработка изменения ориентации экрана
-            window.addEventListener('orientationchange', () => {
+            drawUI() {
+                // Индикатор паузы
+                if (this.paused) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                    
+                    ctx.fillStyle = COLORS.WHITE;
+                    ctx.font = 'bold 48px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('ПАУЗА', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+                    
+                    ctx.font = '24px Arial';
+                    ctx.fillText('Нажмите ESC или коснитесь вне игры', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 50);
+                }
+                
+                // Индикатор Game Over
+                if (this.gameOver) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+                    
+                    ctx.fillStyle = COLORS.RED;
+                    ctx.font = 'bold 48px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('GAME OVER', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 50);
+                    
+                    ctx.fillStyle = COLORS.WHITE;
+                    ctx.font = '24px Arial';
+                    ctx.fillText(`Счет: ${this.player.score}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+                    ctx.fillText(`Волна: ${this.wave}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 40);
+                }
+            }
+            
+            gameLoop(timestamp) {
+                if (this.gameOver) return;
+                
+                const deltaTime = timestamp - this.lastTime || 0;
+                this.lastTime = timestamp;
+                
+                if (!this.paused) {
+                    this.update();
+                    this.draw();
+                }
+                
+                this.frameCount++;
+                requestAnimationFrame(this.gameLoop.bind(this));
+            }
+            
+            showGameOver() {
+                if (this.audio) {
+                    this.audio.play('gameOver');
+                    this.audio.stopMusic();
+                }
+                
+                document.getElementById('finalScore').textContent = this.player.score;
+                document.getElementById('finalWave').textContent = this.wave;
+                document.getElementById('gameOverModal').style.display = 'flex';
+            }
+        }
+        
+
+        async function startGame() {
+            try {
+                // Сначала показываем сообщение о загрузке
+                console.log('Загрузка изображений...');
+                await loadImages();
+                console.log('Изображения загружены, запуск игры...');
+            } catch (error) {
+                console.log('Ошибка загрузки изображений:', error);
+            }
+            
+            // Создаем игру после загрузки изображений
+            game = new Game();
+            
+            // Запускаем музыку после создания игры
+            if (soundEnabled && game.audio) {
                 setTimeout(() => {
-                    window.sudokuGame.renderGrid();
-                }, 100);
-            });
-        });
+                    game.audio.startMusic();
+                }, 500);
+            }
+        }
+        
+        function restartGame() {
+            document.getElementById('gameOverModal').style.display = 'none';
+            startGame();
+        }
+        
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'flex';
+        }
+        
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const soundBtn = document.getElementById('soundBtn');
+            
+            if (soundEnabled) {
+                soundBtn.textContent = '🔊 ЗВУК ВКЛ';
+                if (game && game.audio) {
+                    game.audio.startMusic();
+                }
+            } else {
+                soundBtn.textContent = '🔇 ЗВУК ВЫКЛ';
+                if (game && game.audio) {
+                    game.audio.stopMusic();
+                }
+            }
+        }
+        
+        // ======================= ЗАПУСК ИГРЫ =======================
+        window.onload = startGame;
     </script>
 </body>
 </html>
