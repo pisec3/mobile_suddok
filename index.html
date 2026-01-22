@@ -185,6 +185,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr); /* 5 колонок */
             grid-template-rows: repeat(3, 1fr); /* 3 строки */
+            grid-auto-rows: 1fr;
             gap: 2px;
             margin-bottom: 8px;
             width: 100%;
@@ -220,6 +221,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            min-width: 0;
         }
 
         .number-btn:hover, .number-btn:active {
@@ -272,6 +274,7 @@
             justify-content: center;
             gap: 6px;
             min-height: 40px;
+            min-width: 0;
         }
 
         .action-btn i {
@@ -304,7 +307,10 @@
                 padding: 10px;
                 margin: 2px;
             }
-            
+
+            .number-pad {
+            grid-auto-rows: 1fr; /* ДОБАВЛЕНО */
+            }
             .sudoku-grid {
                 max-width: 100%;
             }
@@ -343,7 +349,10 @@
             .sudoku-cell {
                 font-size: 12px;
             }
-            
+            .number-pad {
+            gap: 1px;
+            grid-auto-rows: 1fr; /* ДОБАВЛЕНО */
+            }
             .number-btn {
                 height: 28px;
                 font-size: 12px;
